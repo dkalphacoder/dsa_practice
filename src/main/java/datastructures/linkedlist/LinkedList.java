@@ -10,7 +10,7 @@ public class LinkedList<T> {
 
 
         Node<String> n1 = new Node<>("homie");
-        linkedList.appendNode(n1);
+        linkedList.insertNodeAtLast(n1);
         linkedList.insertNodeAtPosition(new Node<>("10"),0);
         linkedList.insertNodeAtPosition(new Node<>("20"),1);
         linkedList.insertNodeAtPosition(new Node<>("30"),1);
@@ -19,12 +19,12 @@ public class LinkedList<T> {
 
         Node<String> n2 = new Node<>("70");
         Node<String> n3 = new Node<>("150");
-        linkedList2.insertNode(n2);
-        linkedList2.deleteNodeAt(0);
-        linkedList2.insertNode(new Node<>("140"));
-        linkedList2.insertNode(n3);
-        linkedList2.insertNode(new Node<>("50"));
-        linkedList2.appendNode(new Node<>("250"));
+        linkedList2.insertNodeInFront(n2);
+        linkedList2.deleteNodeAtPosition(0);
+        linkedList2.insertNodeInFront(new Node<>("140"));
+        linkedList2.insertNodeInFront(n3);
+        linkedList2.insertNodeInFront(new Node<>("50"));
+        linkedList2.insertNodeAtLast(new Node<>("250"));
         linkedList2.deleteNode(n3, true);
         linkedList2.deleteNode(n2, false);
 
@@ -49,14 +49,12 @@ public class LinkedList<T> {
 
     public void traverse() {
 
-        Node<T> head = getHead();
-
-        if(head == null) {
+        if(getHead() == null) {
             System.out.println("LinkedList has no nodes.");
             return;
         }
 
-        Node<T> current = head;
+        Node<T> current = getHead();
         while(current!= null) {
             System.out.println("data: " + current.getData() + ", next -> " + current.getNext());
             current = current.getNext();
@@ -96,7 +94,7 @@ public class LinkedList<T> {
         return false;
     }
 
-    public boolean insertAfter(Node<T> node, Node<T> prevNode) {
+    public boolean insertAfterGivenNode(Node<T> node, Node<T> prevNode) {
         if (prevNode == null) {
             System.out.println("prev node cant be null");
             return false;
@@ -108,23 +106,28 @@ public class LinkedList<T> {
         }
     }
 
-    public boolean insertNode (Node<T> node) {
-        node.setNext(getHead());
-        setHead(node);
-        System.out.println("Inserted node: "+ node + " at head");
-        return true;
+    public boolean insertNodeInFront(Node<T> node) {
+        if (node != null) {
+            node.setNext(getHead());
+            setHead(node);
+            System.out.println("Inserted node: "+ node + " at head");
+            return true;
+        } else {
+            System.out.println("Node could not be inserted because it was null");
+            return false;
+        }
     }
 
-    public boolean appendNode (Node<T> node) {
-        Node<T> currentNode = getHead();
+    public boolean insertNodeAtLast(Node<T> node) {
 
-        if (currentNode == null) {
+        if (getHead() == null) {
             node.setNext(getHead());
             setHead(node);
             System.out.println("Appended node: "+ node + " at the head");
             return true;
         }
 
+        Node<T> currentNode = getHead();
         Node<T> prevNode = null;
         while (currentNode!= null) {
             prevNode = currentNode;
@@ -138,24 +141,18 @@ public class LinkedList<T> {
         return true;
     }
 
-    /**
-     *
-     * DELETION METHODS
-     */
-
     public boolean deleteNode (Node<T> n, boolean recursive) {
 
         if (recursive) {
             return deleteNodeRecursiveHelper(getHead(), n, null);
         }
 
-        Node<T> currentNode = getHead();
-
-        if (currentNode == null) {
+        if (getHead() == null) {
             System.out.println("No head found, linked list is empty");
             return false;
         }
 
+        Node<T> currentNode = getHead();
         Node<T> prevNode = null;
         while (currentNode!= null && !currentNode.equals(n)) {
             prevNode = currentNode;
@@ -166,11 +163,10 @@ public class LinkedList<T> {
 
             if (prevNode == null) {
                 setHead(currentNode.getNext());
-
             } else {
                 prevNode.setNext(currentNode.getNext());
-
             }
+
             currentNode.setNext(null);
             System.out.println("Deleted node: "+ n);
             return true;
@@ -202,15 +198,15 @@ public class LinkedList<T> {
         return  deleteNodeRecursiveHelper(head.getNext(), n, head);
     }
 
-    public boolean deleteNodeAt(long position) {
-        Node<T> currentNode = getHead();
-        long currentPosition = 0;
+    public boolean deleteNodeAtPosition(long position) {
 
-        if(currentNode == null) {
+        if(getHead() == null) {
             System.out.println("No head found, linked list is empty");
             return false;
         }
 
+        long currentPosition = 0;
+        Node<T> currentNode = getHead();
         Node<T> prevNode = null;
         while (currentNode != null && currentPosition != position) {
             prevNode = currentNode;
@@ -222,15 +218,14 @@ public class LinkedList<T> {
         // if currentNode!= null then currentPosition will be equals to position
 
         if (currentNode != null &&  currentPosition == position) {
-            if (prevNode != null) {
-                prevNode.setNext(currentNode.getNext());
 
-            } else {
+            if (prevNode == null) {
                 setHead(getHead().getNext());
-
+            } else {
+                prevNode.setNext(currentNode.getNext());
             }
-            currentNode.setNext(null);
 
+            currentNode.setNext(null);
             System.out.println("Deleted node: "+ currentNode);
             return true;
         }
@@ -285,14 +280,12 @@ public class LinkedList<T> {
             return searchElementRecursiveHelper(element, getHead());
         }
 
-
-        Node<T> currentNode = getHead();
-
-        if (currentNode == null) {
+        if (getHead() == null) {
             System.out.println("Linked List is empty. Element not found");
             return false;
         }
 
+        Node<T> currentNode = getHead();
         while (currentNode != null && !currentNode.getData().equals(element)) {
             currentNode = currentNode.getNext();
         }
@@ -328,14 +321,15 @@ public class LinkedList<T> {
 //            return getNthRecursive(position, 0, getHead());
         }
 
-        Node<T> currentNode = getHead();
-        if(currentNode == null) {
+        if(getHead() == null) {
             System.out.println("Node not found at given position because Linked List is empty");
             assert(false);
             return new Node<T>();
         }
 
         long currentPosition = 0;
+        Node<T> currentNode = getHead();
+
         while (currentNode != null && currentPosition != position) {
             currentNode = currentNode.getNext();
             currentPosition++;
