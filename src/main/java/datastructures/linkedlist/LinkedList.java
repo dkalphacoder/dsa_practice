@@ -2,7 +2,19 @@ package datastructures.linkedlist;
 
 public class LinkedList<T> {
 
-    private Node<T> head;
+    protected Node<T> head;
+
+    /**
+     * getters and setters
+     */
+
+    public Node<T> getHead() {
+        return this.head;
+    }
+
+    public void setHead(Node<T> node) {
+        this.head = node;
+    }
 
     public static void main(String[] args){
         LinkedList<String> linkedList = new LinkedList<>();
@@ -33,18 +45,6 @@ public class LinkedList<T> {
         System.out.println("ll2");
         linkedList2.traverse();
 
-    }
-
-    /**
-     * getters and setters
-     */
-
-    public Node<T> getHead() {
-        return this.head;
-    }
-
-    public void setHead(Node<T> node) {
-        this.head = node;
     }
 
     public void traverse() {
