@@ -22,26 +22,26 @@ public class LinkedList<T> {
 
 
         Node<String> n1 = new Node<>("homie");
-        linkedList.insertNodeAtLast(n1);
-        linkedList.insertNodeAtPosition(new Node<>("10"),0);
-        linkedList.insertNodeAtPosition(new Node<>("20"),1);
-        linkedList.insertNodeAtPosition(new Node<>("30"),1);
-        linkedList.insertNodeAtPosition(new Node<>("40"),2);
-        linkedList.deleteNode(n1, true);
+        linkedList.addLast(n1);
+        linkedList.add(new Node<>("10"),0);
+        linkedList.add(new Node<>("20"),1);
+        linkedList.add(new Node<>("30"),1);
+        linkedList.add(new Node<>("40"),2);
+        linkedList.remove(n1, true);
 
         Node<String> n2 = new Node<>("70");
         Node<String> n3 = new Node<>("150");
-        linkedList2.insertNodeInFront(n2);
-        linkedList2.deleteNodeAtPosition(0);
-        linkedList2.insertNodeInFront(new Node<>("140"));
-        linkedList2.insertNodeInFront(n3);
-        linkedList2.insertNodeInFront(new Node<>("50"));
-        linkedList2.insertNodeAtLast(new Node<>("250"));
-        linkedList2.deleteNode(n3, true);
-        linkedList2.deleteNode(n2, false);
+        linkedList2.addFirst(n2);
+        linkedList2.remove(0);
+        linkedList2.addFirst(new Node<>("140"));
+        linkedList2.addFirst(n3);
+        linkedList2.addFirst(new Node<>("50"));
+        linkedList2.addLast(new Node<>("250"));
+        linkedList2.remove(n3, true);
+        linkedList2.remove(n2, false);
 
         linkedList.traverse();
-        System.out.println(linkedList.length(false));
+        System.out.println(linkedList.size(false));
         System.out.println("ll2");
         linkedList2.traverse();
 
@@ -62,7 +62,7 @@ public class LinkedList<T> {
 
     }
 
-    public boolean insertNodeAtPosition(Node<T> node, long position) {
+    public boolean add(Node<T> node, long position) {
 
         Node<T> current = getHead();
         long currentPosition = 0;
@@ -94,7 +94,7 @@ public class LinkedList<T> {
         return false;
     }
 
-    public boolean insertAfterGivenNode(Node<T> node, Node<T> prevNode) {
+    public boolean add(Node<T> node, Node<T> prevNode) {
         if (prevNode == null) {
             System.out.println("prev node cant be null");
             return false;
@@ -106,7 +106,7 @@ public class LinkedList<T> {
         }
     }
 
-    public boolean insertNodeInFront(Node<T> node) {
+    public boolean addFirst(Node<T> node) {
         if (node != null) {
             node.setNext(getHead());
             setHead(node);
@@ -118,7 +118,7 @@ public class LinkedList<T> {
         }
     }
 
-    public boolean insertNodeAtLast(Node<T> node) {
+    public boolean addLast(Node<T> node) {
 
         if (getHead() == null) {
             node.setNext(getHead());
@@ -141,7 +141,7 @@ public class LinkedList<T> {
         return true;
     }
 
-    public boolean deleteNode (Node<T> n, boolean recursive) {
+    public boolean remove(Node<T> n, boolean recursive) {
 
         if (recursive) {
             return deleteNodeRecursiveHelper(getHead(), n, null);
@@ -198,7 +198,7 @@ public class LinkedList<T> {
         return  deleteNodeRecursiveHelper(head.getNext(), n, head);
     }
 
-    public boolean deleteNodeAtPosition(long position) {
+    public boolean remove(long position) {
 
         if(getHead() == null) {
             System.out.println("No head found, linked list is empty");
@@ -245,7 +245,7 @@ public class LinkedList<T> {
         }
     }
 
-    public long length(boolean recursive) {
+    public long size(boolean recursive) {
         if (recursive) {
             return lengthRecursiveHelper(getHead());
         }
