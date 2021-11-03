@@ -2,7 +2,7 @@ package datastructures.stack;
 
 import java.util.ArrayList;
 
-public class StackAR<E> {
+public class StackALR<E> {
 
     protected ArrayList<E> elements;
 
@@ -14,12 +14,12 @@ public class StackAR<E> {
         this.elements = elements;
     }
 
-    public StackAR() {
+    public StackALR() {
         setElements(new ArrayList<>());
     }
 
     public static void main(String[] args) {
-        StackAR<Integer> s = new StackAR<>();
+        StackALR<Integer> s = new StackALR<>();
 
         s.push(1);
         System.out.println(s.peek());
