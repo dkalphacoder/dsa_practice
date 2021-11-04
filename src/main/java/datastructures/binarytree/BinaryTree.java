@@ -1,6 +1,6 @@
 package datastructures.binarytree;
 
-public class BinaryTree<E> {
+public class BinaryTree<E extends Comparable<E>> {
 
     protected BinaryTreeNode<E> root;
 
