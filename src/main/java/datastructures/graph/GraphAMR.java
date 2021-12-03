@@ -69,7 +69,6 @@ public class GraphAMR<E>{
     }
 
     public void addEdge(E vertexOne, E vertexTwo, boolean bidirectional, double weight) {
-        HashMap<E, Integer> vertices = getVertices();
         ArrayList<ArrayList<Double>> adjMatrix = getAdjMatrix();
 
         int vertexOneIndex = getVertices().get(vertexOne) != null ? getVertices().get(vertexOne) : -1;

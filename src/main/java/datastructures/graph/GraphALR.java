@@ -2,53 +2,21 @@ package datastructures.graph;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 
 public class GraphALR<E> {
 
-    public static class VertexWithWeight<E> {
-        E vertex;
-        double weight;
+    protected HashMap<E, ArrayList<VertexAndWeight<E>>> adjList;
 
-        public VertexWithWeight() {}
-
-        public VertexWithWeight(E vertex) {
-            this.vertex = vertex;
-        }
-
-        public VertexWithWeight(E vertex, double weight) {
-            this.vertex = vertex;
-            this.weight = weight;
-        }
-
-        @Override
-        public String toString() {
-            return vertex.toString() + ":"+ weight;
-        }
-    }
-
-    protected HashMap<E, Integer> vertices;
-    protected ArrayList<LinkedList<VertexWithWeight<E>>> adjList;
-
-    public HashMap<E, Integer> getVertices() {
-        return this.vertices;
-    }
-
-    public void setVertices(HashMap<E, Integer> vertices) {
-        this.vertices = vertices;
-    }
-
-    public ArrayList<LinkedList<VertexWithWeight<E>>> getAdjList() {
+    public HashMap<E, ArrayList<VertexAndWeight<E>>> getAdjList() {
         return this.adjList;
     }
 
-    public void setAdjList(ArrayList<LinkedList<VertexWithWeight<E>>> adjList) {
+    public void setAdjList(HashMap<E, ArrayList<VertexAndWeight<E>>> adjList) {
         this.adjList = adjList;
     }
 
     public GraphALR() {
-        setVertices(new HashMap<>());
-        setAdjList(new ArrayList<>());
+        setAdjList(new HashMap<>());
     }
 
     public static void main(String[] args) {
@@ -62,35 +30,26 @@ public class GraphALR<E> {
 
         g.addEdge("a","b",false, 3);
         g.addEdge("kl","d");
+        g.addEdge("b","f",false);
+        g.addEdge("f","d",2);
 
-        System.out.println(g.getVertices());
         System.out.println(g.getAdjList());
     }
 
     public void addVertex(E vertex) {
-        ArrayList<LinkedList<VertexWithWeight<E>>> adjList = getAdjList();
-        adjList.add(new LinkedList<>());
-
-        int verticesCount = adjList.size();
-        adjList.get(verticesCount-1).add(new VertexWithWeight<>(vertex));
-
-        getVertices().put(vertex, verticesCount-1);
+        getAdjList().put(vertex, new ArrayList<>());
     }
 
     public void addEdge(E vertexOne, E vertexTwo, boolean bidirectional, double weight) {
 
-        int vertexOneIndex = getVertices().get(vertexOne) != null ? getVertices().get(vertexOne) : -1;
-        int vertexTwoIndex = getVertices().get(vertexTwo) != null ? getVertices().get(vertexTwo) : -1;
-
-        if (vertexOneIndex == -1 || vertexTwoIndex == -1) {
+        if (!getAdjList().containsKey(vertexOne) || !getAdjList().containsKey(vertexTwo)) {
             System.out.println("One or both of the vertices dont exist, create vertex and try again");
         }
 
-        ArrayList<LinkedList<VertexWithWeight<E>>> adjList = getAdjList();
+        getAdjList().get(vertexOne).add(new VertexAndWeight<>(vertexTwo, weight));
 
-        adjList.get(vertexOneIndex).add(new VertexWithWeight<>(vertexTwo, weight));
         if (bidirectional) {
-            adjList.get(vertexTwoIndex).add(new VertexWithWeight<>(vertexOne, weight));
+            getAdjList().get(vertexTwo).add(new VertexAndWeight<>(vertexOne, weight));
         }
     }
 

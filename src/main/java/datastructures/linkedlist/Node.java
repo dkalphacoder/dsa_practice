@@ -1,5 +1,7 @@
 package datastructures.linkedlist;
 
+import java.util.Objects;
+
 public class Node<T> {
     private T data;
     private Node<T> next;
@@ -32,18 +34,14 @@ public class Node<T> {
     }
 
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if(o instanceof Node) {
-            Node<T> otherNode = (Node<T>) o;
-            return otherNode.getData().equals(this.getData());
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        return false;
+        Node<?> otherNode = (Node<?>) o;
+        return otherNode.getData().equals(this.getData());
     }
 
     public int hashCode() {
-        return this.data.hashCode();
+        return Objects.hash(getData());
     }
 }
