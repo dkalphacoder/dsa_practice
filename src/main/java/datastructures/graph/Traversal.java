@@ -226,7 +226,7 @@ public class GraphAlgorithms<E>{
     }
 
     // only for undirected graph
-    public int connectedComponents(GraphALR<E> graph, String approach ) {
+    public int connectedComponents(GraphALR<E> graph, String approach) {
 
         int res = 0;
 
@@ -265,7 +265,7 @@ public class GraphAlgorithms<E>{
     }
 
     // largest component for undirected graph
-    public int largestComponent(GraphALR<E> graph, String approach ) {
+    public int largestComponent(GraphALR<E> graph, String approach) {
 
         int res = 0;
 
