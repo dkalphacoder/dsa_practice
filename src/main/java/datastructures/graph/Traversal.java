@@ -2,7 +2,7 @@ package datastructures.graph;
 
 import java.util.*;
 
-public class GraphAlgorithms<E>{
+public class Traversal<E>{
 
     private static final String dfs = "dfs";
     private static final String bfs = "bfs";
@@ -26,7 +26,7 @@ public class GraphAlgorithms<E>{
 //
 //        System.out.println(g.getAdjList());
 //
-        GraphAlgorithms<Integer> ga = new GraphAlgorithms<>();
+        Traversal<Integer> ga = new Traversal<>();
 //        ga.depthFirst(g, "a", true);
 //        ga.breadthFirst(g,"a");
 
@@ -52,6 +52,9 @@ public class GraphAlgorithms<E>{
         System.out.println("largest component: " + ga.largestComponent(g,dfsRecursive));
     }
 
+    /**
+     * depth first traversal implementations
+     */
     public void depthFirst(GraphALR<E> graph, E src, boolean recursive) {
         System.out.println("dfs:");
         if (recursive) {
@@ -124,6 +127,9 @@ public class GraphAlgorithms<E>{
         return nodeCount;
     }
 
+    /**
+     * breadth first traversal implementations
+     */
     public void breadthFirst(GraphALR<E> graph, E src) {
         Queue<E> vertices = new LinkedList<>();
         vertices.add(src);
@@ -172,6 +178,9 @@ public class GraphAlgorithms<E>{
         return nodeCount;
     }
 
+    /**
+     * checks if path is present between source & destination
+     */
     public boolean hasPath(GraphALR<E> graph, E src, E dst, boolean isDFSApproach, boolean recursive) {
         if (isDFSApproach) {
             if (recursive) return hasPathDepthFirstSearch(graph, src, dst, new HashSet<>());
@@ -215,9 +224,9 @@ public class GraphAlgorithms<E>{
     }
 
     private boolean hasPathDepthFirstSearch(GraphALR<E> graph, E src, E dst, HashSet<E> visited) {
-        visited.add(src);
         if (src.equals(dst)) return true;
 
+        visited.add(src);
         for (VertexAndWeight<E> neighbour: graph.getAdjList().get(src)) {
             E n = neighbour.getVertex();
             if (!visited.contains(n) && hasPathDepthFirstSearch(graph, n, dst, visited)) return true;
@@ -225,7 +234,123 @@ public class GraphAlgorithms<E>{
         return false;
     }
 
-    // only for undirected graph
+    /**
+     * return all paths between source and destination
+     */
+    public List<ArrayList<E>> allPaths(GraphALR<E> graph, E src, E dst, String approach) {
+        if (approach.equals(dfsRecursive)) {
+            List<ArrayList<E>> allPaths = new ArrayList<>();
+            //original appraoch by daen
+            ArrayList<E> currentPath = new ArrayList<>(){{ add(src); }};
+            allPathsDFSRec(graph, src, dst, currentPath, allPaths);
+
+
+            //using visited
+            allPathsDFSRec(graph, src, dst, new HashSet<>(), new ArrayList<>(){{ add(src); }}, allPaths);
+
+            return allPaths;
+        } else if (approach.equals(bfs)) {
+
+            List<ArrayList<E>> result = new ArrayList<>();
+
+            Stack<ArrayList<E>> allPaths = new Stack<>();
+            ArrayList<E> currentPath = new ArrayList<>(){{ add(src); }};
+
+            allPaths.push(currentPath);
+            while (!allPaths.empty()) {
+                currentPath = allPaths.pop();
+
+                E currentElement = currentPath.get(currentPath.size() - 1);
+                if (currentPath.equals(dst)) {
+                    result.add(currentPath);
+                }
+
+                for (VertexAndWeight<E> neighbour: graph.getAdjList().get(currentElement)) {
+                    E n = neighbour.getVertex();
+                    if (!currentPath.contains(n)) {
+                        ArrayList<E> newPath = new ArrayList<>(currentPath);
+                        newPath.add(n);
+
+                        allPaths.push(newPath);
+                    }
+                }
+            }
+
+            return result;
+        } else {
+
+            List<ArrayList<E>> result = new ArrayList<>();
+
+            Queue<ArrayList<E>> allPaths = new LinkedList<>();
+            ArrayList<E> currentPath = new ArrayList<>(){{ add(src); }};
+
+            allPaths.offer(currentPath);
+            while (!allPaths.isEmpty()) {
+                currentPath = allPaths.poll();
+
+                E currentElement = currentPath.get( currentPath.size() - 1);
+                if (currentElement.equals(dst)) {
+                    result.add(currentPath);
+                }
+
+                for (VertexAndWeight<E> neighbour : graph.getAdjList().get(currentElement)) {
+                    E n = neighbour.getVertex();
+                    if (!currentPath.contains(n)) {
+                        ArrayList<E> newPath = new ArrayList<>(currentPath);
+                        newPath.add(n);
+
+                        allPaths.offer(newPath);
+                    }
+                }
+            }
+
+            return result;
+        }
+    }
+
+    /**
+     *  2 dfs implementations to get all paths, 1 uses visited
+     */
+    private void allPathsDFSRec(GraphALR<E> graph, E src, E dst, ArrayList<E> currentPath, List<ArrayList<E>> allPaths) {
+        if (src.equals(dst)) {
+            allPaths.add(currentPath);
+            return;
+        }
+
+        for (VertexAndWeight<E> neighbour: graph.getAdjList().get(src)) {
+            E n = neighbour.getVertex();
+            if (!currentPath.contains(n)) {
+                ArrayList<E> newPath = new ArrayList<>(currentPath);
+                newPath.add(n);
+
+                allPathsDFSRec(graph, n, dst, newPath, allPaths);
+            }
+        }
+    }
+
+    private void allPathsDFSRec(GraphALR<E> graph, E src, E dst, HashSet<E> visited, ArrayList<E> currentPath, List<ArrayList<E>> allPaths) {
+        if (src.equals(dst)) {
+            ArrayList<E> path = new ArrayList<>(currentPath);
+            allPaths.add(path);
+            return;
+        }
+
+        visited.add(src);
+
+        for (VertexAndWeight<E> neighbour: graph.getAdjList().get(src)) {
+            E n = neighbour.getVertex();
+            if (!visited.contains(n)) {
+                currentPath.add(n);
+                allPathsDFSRec(graph, n, dst, visited, currentPath, allPaths);
+                currentPath.remove(n);
+            }
+        }
+        visited.remove(src);
+    }
+
+    /**
+     * no. of connected components in our UNDIRECTED graph
+     */
     public int connectedComponents(GraphALR<E> graph, String approach) {
 
         int res = 0;
@@ -264,7 +389,9 @@ public class GraphAlgorithms<E>{
         return res;
     }
 
-    // largest component for undirected graph
+    /**
+     * size of the largest connected component in our UNDIRECTED graph
+     */
     public int largestComponent(GraphALR<E> graph, String approach) {
 
         int res = 0;
