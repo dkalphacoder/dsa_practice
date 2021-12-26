@@ -237,10 +237,10 @@ public class Traversal<E>{
     /**
      * return all paths between source and destination
      */
-    public List<ArrayList<E>> allPaths(GraphALR<E> graph, E src, E dst, String approach) {
+    public List<List<E>> allPaths(GraphALR<E> graph, E src, E dst, String approach) {
         if (approach.equals(dfsRecursive)) {
-            List<ArrayList<E>> allPaths = new ArrayList<>();
-            //original appraoch by daen
+            List<List<E>> allPaths = new ArrayList<>();
+            //original appraoch by dkalphacoder
             ArrayList<E> currentPath = new ArrayList<>(){{ add(src); }};
             allPathsDFSRec(graph, src, dst, currentPath, allPaths);
 
@@ -249,9 +249,37 @@ public class Traversal<E>{
             allPathsDFSRec(graph, src, dst, new HashSet<>(), new ArrayList<>(){{ add(src); }}, allPaths);
 
             return allPaths;
-        } else if (approach.equals(bfs)) {
+        } else if (approach.equals(dfs)) {
 
-            List<ArrayList<E>> result = new ArrayList<>();
+            List<List<E>> result = new ArrayList<>();
+
+            Queue<ArrayList<E>> allPaths = new LinkedList<>();
+            ArrayList<E> currentPath = new ArrayList<>(){{ add(src); }};
+
+            allPaths.offer(currentPath);
+            while (!allPaths.isEmpty()) {
+                currentPath = allPaths.poll();
+
+                E currentElement = currentPath.get( currentPath.size() - 1);
+                if (currentElement.equals(dst)) {
+                    result.add(currentPath);
+                }
+
+                for (VertexAndWeight<E> neighbour : graph.getAdjList().get(currentElement)) {
+                    E n = neighbour.getVertex();
+                    if (!currentPath.contains(n)) {
+                        ArrayList<E> newPath = new ArrayList<>(currentPath);
+                        newPath.add(n);
+
+                        allPaths.offer(newPath);
+                    }
+                }
+            }
+            return result;
+
+        } else {
+
+            List<List<E>> result = new ArrayList<>();
 
             Stack<ArrayList<E>> allPaths = new Stack<>();
             ArrayList<E> currentPath = new ArrayList<>(){{ add(src); }};
@@ -277,41 +305,13 @@ public class Traversal<E>{
             }
 
             return result;
-        } else {
-
-            List<ArrayList<E>> result = new ArrayList<>();
-
-            Queue<ArrayList<E>> allPaths = new LinkedList<>();
-            ArrayList<E> currentPath = new ArrayList<>(){{ add(src); }};
-
-            allPaths.offer(currentPath);
-            while (!allPaths.isEmpty()) {
-                currentPath = allPaths.poll();
-
-                E currentElement = currentPath.get( currentPath.size() - 1);
-                if (currentElement.equals(dst)) {
-                    result.add(currentPath);
-                }
-
-                for (VertexAndWeight<E> neighbour : graph.getAdjList().get(currentElement)) {
-                    E n = neighbour.getVertex();
-                    if (!currentPath.contains(n)) {
-                        ArrayList<E> newPath = new ArrayList<>(currentPath);
-                        newPath.add(n);
-
-                        allPaths.offer(newPath);
-                    }
-                }
-            }
-
-            return result;
         }
     }
 
     /**
-     *  2 dfs implementations to get all paths, 1 uses visited
+     *  3 dfs implementations to get all paths, 1 uses currentPath to keep track, 1 uses visited & 1 uses DP
      */
-    private void allPathsDFSRec(GraphALR<E> graph, E src, E dst, ArrayList<E> currentPath, List<ArrayList<E>> allPaths) {
+    private void allPathsDFSRec(GraphALR<E> graph, E src, E dst, ArrayList<E> currentPath, List<List<E>> allPaths) {
         if (src.equals(dst)) {
             allPaths.add(currentPath);
             return;
@@ -326,9 +326,10 @@ public class Traversal<E>{
                 allPathsDFSRec(graph, n, dst, newPath, allPaths);
             }
         }
+        //@TODO modify method and add return statement
     }
 
-    private void allPathsDFSRec(GraphALR<E> graph, E src, E dst, HashSet<E> visited, ArrayList<E> currentPath, List<ArrayList<E>> allPaths) {
+    private void allPathsDFSRec(GraphALR<E> graph, E src, E dst, HashSet<E> visited, ArrayList<E> currentPath, List<List<E>> allPaths) {
         if (src.equals(dst)) {
             ArrayList<E> path = new ArrayList<>(currentPath);
             allPaths.add(path);
@@ -346,6 +347,39 @@ public class Traversal<E>{
             }
         }
         visited.remove(src);
+        //@TODO modify method and add return statement
+    }
+
+    private List<List<E>> allPathsDFSRecDP(GraphALR<E> graph, E src, E dst, HashSet<E> visited, HashMap<String, List<List<E>>> memo) {
+        String memoKey = src + "," + dst;
+        if(memo.containsKey(memoKey)) {
+            return memo.get(memoKey);
+        }
+
+        List<List<E>> allPaths = new ArrayList<>();
+        if (src.equals(dst)) {
+            ArrayList<E> path = new ArrayList<>() {{ add(dst); }};
+            allPaths.add(path);
+            return allPaths;
+        }
+
+        visited.add(src);
+
+        for (VertexAndWeight<E> neighbour: graph.getAdjList().get(src)) {
+            E n = neighbour.getVertex();
+            if (!visited.contains(n)) {
+                List<List<E>> neighbourPaths =  allPathsDFSRecDP(graph, n, dst, visited, memo);
+                for (List<E> neighbourPath: neighbourPaths) {
+                    List<E> pathWithCurrent = new ArrayList<>(neighbourPath);
+                    pathWithCurrent.add(src);
+                    allPaths.add(pathWithCurrent);
+                }
+            }
+        }
+        visited.remove(src);
+        memo.put(memoKey, allPaths);
+
+        return allPaths;
     }
 
     /**
