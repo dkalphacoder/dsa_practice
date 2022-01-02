@@ -159,11 +159,13 @@ public class ShortestPathUnweighted<E> {
                 ArrayList<VertexAndWeight<E>> path = new ArrayList<>(currentPath);
                 allPaths.add(path);
             } else {
-                if (currentPath.size() < allPaths.get(0).size()) {
+                double currentPathDistance = currentPath.get(currentPath.size()-1).getWeight();
+                double existingMinDistance = allPaths.get(0).get(allPaths.get(0).size() - 1).getWeight();
+                if (currentPathDistance < existingMinDistance) {
                     ArrayList<VertexAndWeight<E>> path = new ArrayList<>(currentPath);
                     allPaths.clear();
                     allPaths.add(path);
-                } else if (currentPath.size() == allPaths.get(0).size()) {
+                } else if (currentPathDistance == existingMinDistance) {
                     ArrayList<VertexAndWeight<E>> path = new ArrayList<>(currentPath);
                     allPaths.add(path);
                 }
@@ -370,6 +372,7 @@ public class ShortestPathUnweighted<E> {
 
         /**
          * there wont be any cycles here, otherwise we can just maintain a visited, its not a big deal (add visited before loop & remove visited after loop)
+         * we dont need visited, because predecessors are present in such a way, we wont face a cycle
          * this is a modified implementation of all paths DFS
          */
         for (E predecessor: predecessors.get(dst)) {
